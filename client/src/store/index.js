@@ -60,8 +60,8 @@ export const useGlobalStore = () => {
             // CREATE A NEW LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
                 return setStore({
-                    idNamePairs: store.idNamePairs,
-                    currentList: payload,
+                    idNamePairs: payload.idNamePairs,
+                    currentList: payload.playist,
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false
                 })
@@ -106,6 +106,45 @@ export const useGlobalStore = () => {
                 return store;
         }
     }
+
+  
+    store.createNewList = function (){
+        async function asyncCreateNewList(){
+            let newlist = {
+                name:"Untitled",
+                songs:[]
+            }
+            let response = await api.createPlaylist(newlist);
+            if(response.data.success){
+                console.log("succc")
+                let playlist = response.data.playist;
+                async function updateList(playlist){
+                    response = await api.getPlaylistPairs();
+                    if (response.data.success) {
+                        async function getListPairs(playlist) {
+                            response = await api.getPlaylistPairs();
+                            if (response.data.success) {
+                                let pairsArray = response.data.idNamePairs;
+                                storeReducer({
+                                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                                    payload: {
+                                        idNamePairs: pairsArray,
+                                        playlist: playlist
+                                    }
+                                });
+                            }
+                        }
+                        getListPairs(playlist);
+                    }
+                }
+                updateList(playlist);
+            }
+        }
+        asyncCreateNewList();
+    }
+
+
+
     // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
