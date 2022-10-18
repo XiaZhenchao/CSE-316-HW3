@@ -15,6 +15,7 @@ export const GlobalStoreActionType = {
     CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     CREATE_NEW_LIST: "CREATE_NEW_LIST",
+    UPDATE_CURRENT_LIST:"UPDATE_CURRENT_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
@@ -114,6 +115,15 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList
                 });
             }
+            case GlobalStoreActionType.UPDATE_CURRENT_LIST:{
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    markDeleteList: store.markDeleteList
+                });
+            }
 
             default:
                 return store;
@@ -181,18 +191,22 @@ export const useGlobalStore = () => {
         
     }
 
-    store.addNewSong = function(){
+    store.addNewSong = async function(){
         let newSong = {
             artist: "Unknown", title: "Untitled", youTubeId: "dQw4w9WgXcQ"
         }
-        let songName = store.currentList.songs.name
-        console.log("song name: "+ songName)
-        // async function asyncAddNewSong(){
-            
-        // }
+        this.currentList.songs.push(newSong)
+            await api.updatePlaylistById(this.currentList._id,this.currentList)
+            storeReducer({
+                type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+                payload: this.currentList
+            });     
     }
 
-    
+    store.deleteSong = async function(){
+        
+    }
+
 
 
 

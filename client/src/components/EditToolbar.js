@@ -24,7 +24,7 @@ function EditToolbar() {
         store.closeCurrentList();
     }
 
-    function addNewSong(){
+    function handleAddSong(){
         console.log("add new song button");
         store.addNewSong();
     }
@@ -42,7 +42,7 @@ function EditToolbar() {
                 disabled={editStatus}
                 value="+"
                 className={enabledButtonClass}
-                onClick={addNewSong}
+                onClick={handleAddSong}
             />
             <input
                 type="button"
