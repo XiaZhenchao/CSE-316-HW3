@@ -25,7 +25,8 @@ function EditToolbar() {
     }
 
     function handleAddSong(){
-        store.addNewSong();
+       // store.addNewSong();
+        store.addAddSongTransaction();
     }
 
 

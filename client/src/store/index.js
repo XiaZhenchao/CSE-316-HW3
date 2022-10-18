@@ -2,6 +2,8 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveSong_Transaction from '../common/MoveSong_Transaction';
+import AddSong_Transaction from '../common/AddSong_Transaction';
+import DeleteSong_Transaction from '../common/DeleteSong_Transaction.js';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -285,6 +287,26 @@ export const useGlobalStore = () => {
         });     
     }
 
+    store.deleteSongByIndex = async function(index){
+        console.log("deleteSongByIndex")
+        this.currentList.songs.splice(index,1);
+        await api.updatePlaylistById(this.currentList._id,this.currentList)
+        storeReducer({
+            type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+            payload: this.currentList
+        });     
+    }
+
+   store.RedodeleteSong = async function(index, deleteSong) {
+        this.currentList.songs.splice(index,0,deleteSong)
+        await api.updatePlaylistById(this.currentList._id,this.currentList)
+        storeReducer({
+            type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+            payload: this.currentList
+        });     
+    }
+
+
     store.renameSong = async function(){
         let newSongName = document.getElementById("edit-song-modal-title-textfield").value;
         let newArtistName = document.getElementById("edit-song-modal-artist-textfield").value;
@@ -428,6 +450,16 @@ export const useGlobalStore = () => {
     store.addMoveSongTransaction = function (start, end) {
         let transaction = new MoveSong_Transaction(this, start, end);
         tps.addTransaction(transaction);
+    }
+
+    store.addAddSongTransaction = function(){
+        let transaction = new AddSong_Transaction(this);
+        tps.addTransaction(transaction);
+    }
+
+    store.addDeleteSongTransaction = function(){
+        let transaction = new DeleteSong_Transaction(this);
+        tps.addTransaction(transaction)
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME

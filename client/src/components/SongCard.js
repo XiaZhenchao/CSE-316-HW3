@@ -63,7 +63,7 @@ function SongCard(props) {
     let handleEdit = () => {
         store.showRenameSongModal(index);
     }
-
+ 
     function handleDeleteSong(event) {
         event.stopPropagation();
         let id = event.target.id.substring("remove-song-".length)

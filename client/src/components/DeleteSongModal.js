@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react'
+
+import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
 
 
@@ -11,10 +12,13 @@ function DeleteSongModal(){
     }
 
     function handleConfirm(){
-        store.deleteSong()
+       // store.deleteSong()
+        // let index = store.markDeleteSong
+        // let songs = store.currentList.songs[store.markDeleteSong]
+      //  store.addDeleteSongTransaction()
+      store.addDeleteSongTransaction()
         store.hideDeleteSongModal()
     }
-
     function handleCancel(){
         store.hideDeleteSongModal()
     }
