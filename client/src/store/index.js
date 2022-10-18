@@ -4,6 +4,7 @@ import api from '../api'
 import MoveSong_Transaction from '../common/MoveSong_Transaction';
 import AddSong_Transaction from '../common/AddSong_Transaction';
 import DeleteSong_Transaction from '../common/DeleteSong_Transaction.js';
+import EditSong_Transaction from '../common/EditSong_Transaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -318,6 +319,14 @@ export const useGlobalStore = () => {
         store.setCurrentList(this.currentList._id) 
     }
 
+
+    store.renameSongById = async function(Id,newSong){
+        this.currentList.songs.splice(Id,1, newSong)
+        await api.updatePlaylistById(this.currentList._id,this.currentList)
+        store.setCurrentList(this.currentList._id) 
+    }
+
+
     store.moveSong = async function(start, end) {
         let list = this.currentList;
         start = start.substring(0,1)
@@ -460,6 +469,20 @@ export const useGlobalStore = () => {
     store.addDeleteSongTransaction = function(){
         let transaction = new DeleteSong_Transaction(this);
         tps.addTransaction(transaction)
+    }
+
+    store.addEditSongTransaction = function(index){
+        let OldSongName = this.currentList.songs[index].title;
+        let OldArtistName = this.currentList.songs[index].artist;
+        let OldyoutubeId = this.currentList.songs[index].youTubeId;
+        let oldSong = {title: OldSongName, artist: OldArtistName, youTubeId: OldyoutubeId}
+
+        let newSongName = document.getElementById("edit-song-modal-title-textfield").value;
+        let newArtistName = document.getElementById("edit-song-modal-artist-textfield").value;
+        let newyoutubeId = document.getElementById("edit-song-modal-youTubeId-textfield").value;
+        let newSong = {title: newSongName, artist: newArtistName, youTubeId: newyoutubeId}
+        let transaction = new EditSong_Transaction(this,index,oldSong,newSong)
+        tps.addTransaction(transaction);
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME

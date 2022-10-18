@@ -18,7 +18,8 @@ function RenameSongModal(){
     }
 
     function handleConfirm(){
-        store.renameSong()
+        // store.renameSong()
+        store.addEditSongTransaction(store.markRenameSong)
         store.hideRenameSongModal()
     }
 
