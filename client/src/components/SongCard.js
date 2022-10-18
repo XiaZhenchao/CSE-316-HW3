@@ -61,8 +61,7 @@ function SongCard(props) {
     }
 
     let handleEdit = () => {
-        //store.showEditSongModal(index);
-        console.log("show edition")
+        store.showRenameSongModal(index);
     }
 
     function handleDeleteSong(event) {
