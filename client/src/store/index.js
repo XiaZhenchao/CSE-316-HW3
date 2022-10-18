@@ -1,6 +1,7 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import MoveSong_Transaction from '../common/MoveSong_Transaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -233,10 +234,11 @@ export const useGlobalStore = () => {
         }
         this.currentList.songs.push(newSong)
             await api.updatePlaylistById(this.currentList._id,this.currentList)
-            storeReducer({
-                type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
-                payload: this.currentList
-            });     
+            // storeReducer({
+            //     type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+            //     payload: this.currentList
+            // });    
+            store.setCurrentList(this.currentList._id) 
     }
 
     store.deleteSong = async function(){
@@ -246,6 +248,50 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
             payload: this.currentList
         });     
+    }
+
+    // store.moveSong = async function(source, target){
+    //     let temp  = this.currentList.songs[source]
+    //     this.currentList.songs[source] = this.currentList.songs[target]
+    //     this.currentList.songs[target] = temp
+    //     await api.updatePlaylistById(this.currentList._id, this.currentList);
+    //     storeReducer({
+    //         type: GlobalStoreActionType.UPDATE
+    //     });
+    // }
+
+    store.moveSong = async function(start, end) {
+        let list = this.currentList;
+        start = start.substring(0,1)
+        end = end.substring(0,1)
+        // console.log("list: "+ list.songs)
+        // console.log("stat song: "+ list.songs[start].title)
+        // console.log("end song: "+ list.songs[end].title)
+        // WE NEED TO UPDATE THE STATE FOR THE APP
+        // start -= 1;
+        // end -= 1;
+        // console.log("start: "+ start)
+        // console.log("end: "+ end)
+        // if (start < end) {
+        //     let temp = list.songs[start];
+        //     for (let i = start; i < end; i++) {
+        //         list.songs[i] = list.songs[i + 1];
+        //     }
+        //     list.songs[end] = temp;
+        // }
+        // else if (start > end) {
+        //     let temp = list.songs[start];
+        //     for (let i = start; i > end; i--) {
+        //         list.songs[i] = list.songs[i - 1];
+        //     }
+        //     list.songs[end] = temp;
+        // }
+        let temp = list.songs[start]
+        list.songs[start] = list.songs[end]
+        list.songs[end] = temp
+
+        await api.updatePlaylistById(this.currentList._id,this.currentList)
+        store.setCurrentList(this.currentList._id) 
     }
 
     
@@ -340,6 +386,12 @@ export const useGlobalStore = () => {
     }
     store.redo = function () {
         tps.doTransaction();
+    }
+
+
+    store.addMoveSongTransaction = function (start, end) {
+        let transaction = new MoveSong_Transaction(this, start, end);
+        tps.addTransaction(transaction);
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
