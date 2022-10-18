@@ -20,8 +20,7 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     MARK_DELETE_LIST: "MARK_DELETE_LIST",
-    // MARK_EDIT_LIST: "MARK_EDIT_LIST",
-    // MARK_DELETE_SONG:"MARK_DELETE_SONG",
+    MARK_DELETE_SONG: "MARK_DELETE_SONG",
     // MARK_EDIT_SONG:"MARK_EDIT_SONG",
 }
 
@@ -37,7 +36,8 @@ export const useGlobalStore = () => {
         currentList: null,
         newListCounter: 0,
         listNameActive: false,
-        markDeleteList:null
+        markDeleteList: null,
+        markDeleteSong: null,
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -52,7 +52,8 @@ export const useGlobalStore = () => {
                     currentList: payload.playlist,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: null
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -62,7 +63,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: null
                 })
             }
             // CREATE A NEW LIST
@@ -72,7 +74,8 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: store.markDeleteSong
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -82,7 +85,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: store.markDeleteSong
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -92,7 +96,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    markDeleteList: payload
+                    markDeleteList: payload,
+                    markDeleteSong: store.markDeleteSong
                 });
             }
             // UPDATE A LIST
@@ -102,7 +107,8 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: store.markDeleteSong
                 });
             }
             // START EDITING A LIST NAME
@@ -112,7 +118,8 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: true,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: store.markDeleteSong
                 });
             }
             case GlobalStoreActionType.UPDATE_CURRENT_LIST:{
@@ -121,7 +128,18 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: store.listNameActive,
-                    markDeleteList: store.markDeleteList
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: store.markDeleteSong
+                });
+            }
+            case GlobalStoreActionType.MARK_DELETE_SONG:{
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: payload,
                 });
             }
 
@@ -159,12 +177,30 @@ export const useGlobalStore = () => {
             payload: markedList
         });
         modal.classList.add("is-visible");
-
-      
     }
 
     store.hideDeleteListModal = function (){
         let modal = document.getElementById("delete-list-modal");
+        modal.classList.remove("is-visible");
+    }
+
+    store.showDeleteSongModal = function(index){
+        let modal = document.getElementById("delete-song-modal");
+        // console.log("test")
+        // console.log("index: "+ index)
+        // console.log("song delete: "+ this.currentList.songs[index].title)
+        storeReducer({
+            type: GlobalStoreActionType.MARK_DELETE_SONG,
+            payload: index
+        });     
+
+        //console.log("show delete song modal: "+ store.markDeleteSong)
+
+        modal.classList.add("is-visible");
+    }
+
+    store.hideDeleteSongModal = function(){
+        let modal = document.getElementById("delete-song-modal");
         modal.classList.remove("is-visible");
     }
 
@@ -204,10 +240,15 @@ export const useGlobalStore = () => {
     }
 
     store.deleteSong = async function(){
-        
+        this.currentList.songs.splice(this.markDeleteSong,1);
+        await api.updatePlaylistById(this.currentList._id,this.currentList)
+        storeReducer({
+            type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+            payload: this.currentList
+        });     
     }
 
-
+    
 
 
 

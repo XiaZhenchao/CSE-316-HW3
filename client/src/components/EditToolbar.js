@@ -25,7 +25,6 @@ function EditToolbar() {
     }
 
     function handleAddSong(){
-        console.log("add new song button");
         store.addNewSong();
     }
 

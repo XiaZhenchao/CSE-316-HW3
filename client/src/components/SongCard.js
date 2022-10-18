@@ -10,8 +10,7 @@ function SongCard(props) {
     function handleDeleteSong(event) {
         event.stopPropagation();
         let id = event.target.id.substring("remove-song-".length)
-        console.log("index: "+ index)
-        console.log("Delete song function")
+        store.showDeleteSongModal(id)
     }
 
     return (
