@@ -67,6 +67,7 @@ body {
   grid-column: 1 / 3;
   grid-row: 2 / 3;
   display:grid;
+  font-size: 48pt;
   background-color: var(--swatch-primary);
 }
 
