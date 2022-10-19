@@ -29,6 +29,33 @@ function EditToolbar() {
         store.addAddSongTransaction();
     }
 
+    let addButtonState = false
+    let closeButtonState = false
+    let redoButtonState = false
+    let undoButtonState = false
+
+    if(store.currentList == null || store.modalState )
+    {
+        addButtonState = true
+    }
+
+    if(store.currentList == null|| store.modalState)
+    {
+        closeButtonState = true
+    }
+    
+
+    if(store.currentList == null || !store.hasTransactionToRedo() || store.modalState)
+    {
+        redoButtonState = true
+    }
+
+    if(store.currentList == null || !store.hasTransactionToUndo() || store.modalState)
+    {
+        undoButtonState = true
+    }
+
+
 
     let editStatus = false;
     if (store.isListNameEditActive) {
@@ -39,7 +66,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='add-song-button'
-                disabled={editStatus}
+                disabled={addButtonState}
                 value="+"
                 className={enabledButtonClass}
                 onClick={handleAddSong}
@@ -47,7 +74,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='undo-button'
-                disabled={editStatus}
+                disabled={undoButtonState}
                 value="⟲"
                 className={enabledButtonClass}
                 onClick={handleUndo}
@@ -55,7 +82,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='redo-button'
-                disabled={editStatus}
+                disabled={redoButtonState}
                 value="⟳"
                 className={enabledButtonClass}
                 onClick={handleRedo}
@@ -63,7 +90,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='close-button'
-                disabled={editStatus}
+                disabled={closeButtonState}
                 value="&#x2715;"
                 className={enabledButtonClass}
                 onClick={handleClose}

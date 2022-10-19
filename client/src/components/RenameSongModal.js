@@ -7,8 +7,13 @@ function RenameSongModal(){
     let songname = "test"
     let artistname = "test"
     let youtubeid = "test"
+    
+    if(store.currentList)
+    {
+        console.log("test1: "+store.markRenameSong)
+    }
     if(store.currentList && store.currentList.songs[store.markRenameSong] ){
-        console.log(store.currentList)
+        console.log("test2: "+store.currentList)
         songname = store.currentList.songs[store.markRenameSong].title
         artistname = store.currentList.songs[store.markRenameSong].artist
         youtubeid = store.currentList.songs[store.markRenameSong].youTubeId
@@ -18,7 +23,6 @@ function RenameSongModal(){
     }
 
     function handleConfirm(){
-        // store.renameSong()
         store.addEditSongTransaction(store.markRenameSong)
         store.hideRenameSongModal()
     }

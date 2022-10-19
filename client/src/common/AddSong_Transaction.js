@@ -19,9 +19,7 @@ export default class AddSong_Transaction extends jsTPS_Transaction {
     }
     
     undoTransaction() {
-        console.log("get into undo function")
         let DeleteId = this.store.currentList.songs.length-1;
-        console.log("deleteID: "+ DeleteId)
         this.store.deleteSongByIndex(DeleteId)
     }
 }

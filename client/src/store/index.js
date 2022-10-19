@@ -26,6 +26,7 @@ export const GlobalStoreActionType = {
     MARK_DELETE_LIST: "MARK_DELETE_LIST",
     MARK_DELETE_SONG: "MARK_DELETE_SONG",
     MARK_RENAME_SONG: " MARK_RENAME_SONG",
+    MODAL_STATE: "MODAL_STATE",
     // MARK_EDIT_SONG:"MARK_EDIT_SONG",
 }
 
@@ -44,6 +45,7 @@ export const useGlobalStore = () => {
         markDeleteList: null,
         markDeleteSong: null,
         markRenameSong: null,
+        modalState:false,
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -61,6 +63,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: null,
                     markRenameSong: null,
+                    modalState:false,
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -73,6 +76,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: null,
                     markRenameSong: null,
+                    modalState: store.modalState,
                 })
             }
             // CREATE A NEW LIST
@@ -85,6 +89,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: store.markDeleteSong,
                     markRenameSong: null,
+                    modalState: store.modalState,
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -97,6 +102,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: store.markDeleteSong,
                     markRenameSong: store.markRenameSong,
+                    modalState: store.modalState,
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -109,6 +115,7 @@ export const useGlobalStore = () => {
                     markDeleteList: payload,
                     markDeleteSong: store.markDeleteSong,
                     markRenameSong: store.markRenameSong,
+                    modalState: store.modalState,
                 });
             }
             // UPDATE A LIST
@@ -121,6 +128,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: store.markDeleteSong,
                     markRenameSong: store.markRenameSong,
+                    modalState: store.modalState,
                 });
             }
             // START EDITING A LIST NAME
@@ -133,6 +141,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: store.markDeleteSong,
                     markRenameSong: store.markRenameSong,
+                    modalState: store.modalState,
                 });
             }
             case GlobalStoreActionType.UPDATE_CURRENT_LIST:{
@@ -144,6 +153,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: store.markDeleteSong,
                     markRenameSong: store.markRenameSong,
+                    modalState: store.modalState,
                 });
             }
             case GlobalStoreActionType.MARK_DELETE_SONG:{
@@ -155,6 +165,7 @@ export const useGlobalStore = () => {
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: payload,
                     markRenameSong: store.markRenameSong,
+                    modalState: store.modalState,
                 });
             }
             case GlobalStoreActionType.MARK_RENAME_SONG:{
@@ -165,7 +176,20 @@ export const useGlobalStore = () => {
                     listNameActive: false,
                     markDeleteList: store.markDeleteList,
                     markDeleteSong: store.markDeleteSong,
-                    markRenameSong: payload
+                    markRenameSong: payload,
+                    modalState: true,
+                });
+            }
+            case GlobalStoreActionType.MODAL_STATE:{
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    markDeleteList: store.markDeleteList,
+                    markDeleteSong: store.markDeleteSong,
+                    markRenameSong: store.markRenameSong,
+                    modalState: payload
                 });
             }
             default:
@@ -201,31 +225,46 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.MARK_LIST_FOR_DELETION,
             payload: markedList
         });
+
+        storeReducer({
+            type: GlobalStoreActionType.MODAL_STATE,
+            payload: true
+        });
         modal.classList.add("is-visible");
     }
 
     store.hideDeleteListModal = function (){
         let modal = document.getElementById("delete-list-modal");
+        storeReducer({
+            type: GlobalStoreActionType.MODAL_STATE,
+            payload: false
+        });
         modal.classList.remove("is-visible");
     }
 
     store.showDeleteSongModal = function(index){
         let modal = document.getElementById("delete-song-modal");
-        // console.log("test")
-        // console.log("index: "+ index)
-        // console.log("song delete: "+ this.currentList.songs[index].title)
         storeReducer({
             type: GlobalStoreActionType.MARK_DELETE_SONG,
             payload: index
         });     
 
-        //console.log("show delete song modal: "+ store.markDeleteSong)
+        storeReducer({
+            type: GlobalStoreActionType.MODAL_STATE,
+            payload: true
+        });
 
+        //console.log("show delete song modal: "+ store.markDeleteSong)
         modal.classList.add("is-visible");
     }
 
     store.hideDeleteSongModal = function(){
         let modal = document.getElementById("delete-song-modal");
+
+        storeReducer({
+            type: GlobalStoreActionType.MODAL_STATE,
+            payload: false
+        });
         modal.classList.remove("is-visible");
     }
 
@@ -235,12 +274,17 @@ export const useGlobalStore = () => {
             type:GlobalStoreActionType.MARK_RENAME_SONG,
             payload: index
         });
-        //console.log("showrenamesongfunction"+store.markRenameSong)
+
+
         modal.classList.add("is-visible");
     }
 
     store.hideRenameSongModal = function(){
         let modal = document.getElementById("edit-song-modal");
+        storeReducer({
+            type: GlobalStoreActionType.MODAL_STATE,
+            payload: false
+        });
         modal.classList.remove("is-visible");
     }
 
@@ -318,6 +362,8 @@ export const useGlobalStore = () => {
         await api.updatePlaylistById(this.currentList._id,this.currentList)
         store.setCurrentList(this.currentList._id) 
     }
+
+
 
 
     store.renameSongById = async function(Id,newSong){
@@ -453,6 +499,14 @@ export const useGlobalStore = () => {
     }
     store.redo = function () {
         tps.doTransaction();
+    }
+
+    store.hasTransactionToRedo = function(){
+        return tps.hasTransactionToRedo()
+    }
+
+    store.hasTransactionToUndo = function(){
+        return tps.hasTransactionToUndo()
     }
 
 
