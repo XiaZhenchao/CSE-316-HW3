@@ -198,15 +198,12 @@ export const useGlobalStore = () => {
     }
 
     store.deletelist =  function(){
-
-        
         let id = store.markDeleteList._id
         let name = store.markDeleteList.name
-        console.log("id: "+ id)
+        console.log("deletelist: "+ this.currentList)
         async function deletelist(id){
             let response = await api.deletePlaylistById(id);
             let name = store.markDeleteList.name
-            console.log("Name: "+name)
             storeReducer({
                 type: GlobalStoreActionType.CREATE_NEW_LIST,
                 payload: name
@@ -226,19 +223,11 @@ export const useGlobalStore = () => {
             payload: markedList
         });
 
-        storeReducer({
-            type: GlobalStoreActionType.MODAL_STATE,
-            payload: true
-        });
         modal.classList.add("is-visible");
     }
 
     store.hideDeleteListModal = function (){
         let modal = document.getElementById("delete-list-modal");
-        storeReducer({
-            type: GlobalStoreActionType.MODAL_STATE,
-            payload: false
-        });
         modal.classList.remove("is-visible");
     }
 
@@ -274,8 +263,6 @@ export const useGlobalStore = () => {
             type:GlobalStoreActionType.MARK_RENAME_SONG,
             payload: index
         });
-
-
         modal.classList.add("is-visible");
     }
 
@@ -285,6 +272,8 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.MODAL_STATE,
             payload: false
         });
+        console.log("getin")
+        console.log("store.modalState: "+ store.modalState)
         modal.classList.remove("is-visible");
     }
 
@@ -454,6 +443,8 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+        console.log("get in here")
+        tps.clearAllTransactions();
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -538,6 +529,23 @@ export const useGlobalStore = () => {
         let transaction = new EditSong_Transaction(this,index,oldSong,newSong)
         tps.addTransaction(transaction);
     }
+
+    store.ShortcutDetect = function() {
+        console.log("get into shortcut")
+        function KeyPress(event, app) {
+            console.log("get into KeyPress")
+            if (event.key === "z" && event.ctrlKey){
+                app.undo();
+                console.log("undo");
+            }
+            if (event.key === "y" && event.ctrlKey){
+                app.redo();
+                console.log("redo");
+            } 
+    }
+    document.onkeydown = (e) => KeyPress(e,this);
+    }
+   
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {
